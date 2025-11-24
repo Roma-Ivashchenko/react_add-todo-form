@@ -1,6 +1,4 @@
-import users from './api/users';
 import './App.scss';
-import { UserInfo } from './components/UserInfo';
 
 import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
@@ -14,6 +12,10 @@ function getUserById(userId: number): User | null {
 }
 
 function getNewTodoId(todos: Todo[]) {
+  if (todos.length === 0) {
+    return 1;
+  }
+
   const maxId = Math.max(...todos.map(todo => todo.id));
 
   return maxId + 1;
@@ -23,7 +25,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [hasTitleError, setHasTitleError] = useState(false);
 
-  const [UserId, setUserId] = useState(0);
+  const [userId, setUserId] = useState(0);
   const [hasUserIdError, setHasUserIdError] = useState(false);
 
   const [todos, setTodos] = useState(
@@ -44,18 +46,18 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     setHasTitleError(!title);
-    setHasUserIdError(!UserId);
+    setHasUserIdError(!userId);
 
-    if (!title || !UserId) {
+    if (!title || !userId) {
       return;
     }
 
     const newTodo = {
       id: getNewTodoId(todos),
       title: title,
-      userId: UserId,
+      userId: userId,
       completed: false,
-      user: getUserById(UserId),
+      user: getUserById(userId),
     };
 
     setTodos(prev => [...prev, newTodo]);
@@ -82,7 +84,7 @@ export const App: React.FC = () => {
         <div className="field">
           <select
             data-cy="userSelect"
-            value={UserId}
+            value={userId}
             onChange={handleUserIdChange}
           >
             <option value={0} disabled>
